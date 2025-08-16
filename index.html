@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creative Studio - Home</title>
+    
+    <!-- Netlify Identity Widget -->
+    <script type="text/javascript" src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    
+    <!-- GrapesJS CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/grapesjs/dist/css/grapes.min.css">
+    
+    <!-- Custom Styles -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        /* Navigation */
+        .navbar {
+            background: #2c3e50;
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+        
+        .logo {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #3498db;
+        }
+        
+        /* Admin Controls */
+        .admin-controls {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 1001;
+            display: none;
+        }
+        
+        .admin-controls.show {
+            display: block;
+        }
+        
+        .edit-btn, .save-btn, .logout-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .edit-btn:hover, .save-btn:hover, .logout-btn:hover {
+            background: #2980b9;
+        }
+        
+        .save-btn {
+            background: #27ae60;
+        }
+        
+        .save-btn:hover {
+            background: #229954;
+        }
+        
+        .logout-btn {
+            background: #e74c3c;
+        }
+        
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-top: 80px;
+            min-height: calc(100vh - 80px);
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .cta-btn {
+            background: #3498db;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            transition: background 0.3s;
+        }
+        
+        .cta-btn:hover {
+            background: #2980b9;
+        }
+        
+        /* Services Section */
+        .services {
+            padding: 80px 0;
+            background: #f8f9fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #2c3e50;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .service-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .service-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .service-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+        
+        /* Footer */
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+        }
+        
+        /* GrapesJS Editor Styles */
+        .gjs-editor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            display: none;
+        }
+        
+        .gjs-editor.active {
+            display: block;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .admin-controls {
+                right: 10px;
+                top: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Creative Studio</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Admin Controls (Hidden by default) -->
+    <div class="admin-controls" id="adminControls">
+        <button class="edit-btn" onclick="startEditing()">✏️ Edit Page</button>
+        <button class="save-btn" onclick="saveContent()" style="display: none;" id="saveBtn">💾 Save</button>
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <!-- Hero Section -->
+        <section class="hero" id="hero-section">
+            <div class="hero-content">
+                <h1>Welcome to Creative Studio</h1>
+                <p>We create amazing digital experiences that inspire and engage your audience</p>
+                <a href="contact.html" class="cta-btn">Get Started</a>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section class="services" id="services-section">
+            <div class="container">
+                <h2 class="section-title">Our Services</h2>
+                <div class="services-grid">
+                    <div class="service-card">
+                        <div class="service-icon">🎨</div>
+                        <h3>Web Design</h3>
+                        <p>Beautiful, responsive websites that convert visitors into customers</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">📱</div>
+                        <h3>Mobile Apps</h3>
+                        <p>Native and cross-platform mobile applications for iOS and Android</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">🚀</div>
+                        <h3>Digital Marketing</h3>
+                        <p>Strategic marketing campaigns that grow your business online</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Creative Studio. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- GrapesJS Editor Container -->
+    <div id="gjs-editor" class="gjs-editor"></div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/grapesjs"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

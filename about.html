@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creative Studio - About</title>
+    
+    <!-- Netlify Identity Widget -->
+    <script type="text/javascript" src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    
+    <!-- GrapesJS CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/grapesjs/dist/css/grapes.min.css">
+    
+    <!-- Custom Styles -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        /* Navigation */
+        .navbar {
+            background: #2c3e50;
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+        
+        .logo {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #3498db;
+        }
+        
+        /* Admin Controls */
+        .admin-controls {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 1001;
+            display: none;
+        }
+        
+        .admin-controls.show {
+            display: block;
+        }
+        
+        .edit-btn, .save-btn, .logout-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .edit-btn:hover, .save-btn:hover, .logout-btn:hover {
+            background: #2980b9;
+        }
+        
+        .save-btn {
+            background: #27ae60;
+        }
+        
+        .save-btn:hover {
+            background: #229954;
+        }
+        
+        .logout-btn {
+            background: #e74c3c;
+        }
+        
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-top: 80px;
+            min-height: calc(100vh - 80px);
+        }
+        
+        /* About Section */
+        .about-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+        }
+        
+        .about-content {
+            padding: 80px 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+        
+        .about-text h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: #2c3e50;
+        }
+        
+        .about-text p {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            color: #666;
+        }
+        
+        .about-image {
+            text-align: center;
+        }
+        
+        .about-image img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        /* Team Section */
+        .team {
+            background: #f8f9fa;
+            padding: 80px 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #2c3e50;
+        }
+        
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        
+        .team-member {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .member-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: #ddd;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+        
+        /* Footer */
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+        }
+        
+        /* GrapesJS Editor Styles */
+        .gjs-editor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            display: none;
+        }
+        
+        .gjs-editor.active {
+            display: block;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .about-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .admin-controls {
+                right: 10px;
+                top: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Creative Studio</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Admin Controls (Hidden by default) -->
+    <div class="admin-controls" id="adminControls">
+        <button class="edit-btn" onclick="startEditing()">✏️ Edit Page</button>
+        <button class="save-btn" onclick="saveContent()" style="display: none;" id="saveBtn">💾 Save</button>
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <!-- About Hero -->
+        <section class="about-hero">
+            <div class="container">
+                <h1>About Creative Studio</h1>
+                <p>Learn more about our story, mission, and the talented team behind our success</p>
+            </div>
+        </section>
+
+        <!-- About Content -->
+        <section class="about-content">
+            <div class="container">
+                <div class="about-grid">
+                    <div class="about-text">
+                        <h2>Our Story</h2>
+                        <p>Founded in 2020, Creative Studio has been at the forefront of digital innovation. We believe in creating meaningful connections between brands and their audiences through exceptional design and technology.</p>
+                        <p>Our team of passionate designers, developers, and strategists work together to bring your vision to life. We don't just build websites and apps – we craft experiences that inspire, engage, and convert.</p>
+                        <p>With over 100 successful projects completed, we've helped businesses of all sizes achieve their digital goals and grow their online presence.</p>
+                    </div>
+                    <div class="about-image">
+                        <img src="/placeholder.svg?height=400&width=500" alt="Our Team at Work">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Team Section -->
+        <section class="team">
+            <div class="container">
+                <h2 class="section-title">Meet Our Team</h2>
+                <div class="team-grid">
+                    <div class="team-member">
+                        <div class="member-photo">👨‍💼</div>
+                        <h3>John Smith</h3>
+                        <p>Creative Director</p>
+                        <p>Leading our creative vision with 10+ years of design experience</p>
+                    </div>
+                    <div class="team-member">
+                        <div class="member-photo">👩‍💻</div>
+                        <h3>Sarah Johnson</h3>
+                        <p>Lead Developer</p>
+                        <p>Full-stack developer passionate about clean, efficient code</p>
+                    </div>
+                    <div class="team-member">
+                        <div class="member-photo">👨‍🎨</div>
+                        <h3>Mike Chen</h3>
+                        <p>UX Designer</p>
+                        <p>Creating user-centered designs that delight and convert</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Creative Studio. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- GrapesJS Editor Container -->
+    <div id="gjs-editor" class="gjs-editor"></div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/grapesjs"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>
