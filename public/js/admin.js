@@ -38,10 +38,20 @@ function checkAuthStatus() {
   const user = window.netlifyIdentity && window.netlifyIdentity.currentUser()
   console.log("[v0] Checking auth status, current user:", user)
 
+  const authButton = document.getElementById("authButton")
+
   if (user) {
     showAdminControls()
+    if (authButton) {
+      authButton.textContent = "Logout"
+      authButton.style.color = "#e74c3c"
+    }
   } else {
     hideAdminControls()
+    if (authButton) {
+      authButton.textContent = "Login"
+      authButton.style.color = ""
+    }
     // Show login modal for admin access
     if (window.location.hash === "#admin") {
       window.netlifyIdentity.open()
@@ -269,6 +279,25 @@ function logout() {
 
   if (window.netlifyIdentity) {
     window.netlifyIdentity.logout()
+  }
+}
+
+function toggleAuth() {
+  console.log("[v0] Toggle auth clicked")
+
+  if (!window.netlifyIdentity) {
+    console.error("[v0] Netlify Identity not available")
+    return
+  }
+
+  const user = window.netlifyIdentity.currentUser()
+
+  if (user) {
+    // User is logged in, so logout
+    logout()
+  } else {
+    // User is not logged in, so show login modal
+    window.netlifyIdentity.open()
   }
 }
 
