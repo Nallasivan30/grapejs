@@ -270,18 +270,37 @@
             height: 100%;
         }
         
-        /* Close button */
-        .close-editor {
+        /* Editor Toolbar */
+        .editor-toolbar {
             position: absolute;
             top: 10px;
             right: 10px;
+            z-index: 10000;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .save-editor-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .save-editor-btn:hover {
+            background: #229954;
+        }
+        
+        .close-editor {
             background: #e74c3c;
             color: white;
             border: none;
             padding: 10px 15px;
             border-radius: 5px;
             cursor: pointer;
-            z-index: 10000;
         }
         
         .close-editor:hover {
@@ -370,7 +389,10 @@
 
     <!-- GrapesJS Editor Container -->
     <div class="editor-wrapper" id="editor-wrapper">
-        <button class="close-editor" onclick="closeEditor()">✖ Close</button>
+        <div class="editor-toolbar">
+            <button class="save-editor-btn" onclick="saveContent()">💾 Save Changes</button>
+            <button class="close-editor" onclick="closeEditor()">✖ Close Without Saving</button>
+        </div>
         <div class="editor-row">
             <div class="panel__switcher">
                 <button onclick="showPanel('layers')" class="panel-btn active">📋 Layers</button>
@@ -395,6 +417,9 @@
         // Initialize when page loads
         document.addEventListener("DOMContentLoaded", () => {
             console.log("DOM fully loaded and parsed");
+            
+            // Load saved content first
+            loadSavedContent();
             
             // Initialize Netlify Identity - Mock for demo
             initializeMockAuth();
@@ -574,26 +599,118 @@
             
             if (!editor || !isEditing) {
                 console.error("Cannot save - no editor or not in editing mode");
+                alert("Error: Editor not ready for saving");
                 return;
             }
 
             try {
-                // Get the updated HTML from the editor
+                // Get the updated HTML and CSS from the editor
                 const html = editor.getHtml();
-                console.log("Got HTML from editor:", html.substring(0, 100) + "...");
+                const css = editor.getCss();
+                
+                console.log("Got HTML from editor:", html.substring(0, 200) + "...");
+                console.log("Got CSS from editor:", css.substring(0, 200) + "...");
 
                 // Update the main content
                 const mainContent = document.getElementById("mainContent");
                 if (mainContent) {
+                    console.log("Updating main content with new HTML");
                     mainContent.innerHTML = html;
                 }
 
+                // Update styles if there are any
+                if (css) {
+                    updatePageStyles(css);
+                }
+
+                // Store in localStorage for persistence (in real app, send to server)
+                try {
+                    const contentData = {
+                        html: html,
+                        css: css,
+                        timestamp: new Date().toISOString()
+                    };
+                    localStorage.setItem('saved_content', JSON.stringify(contentData));
+                    console.log("Content saved to localStorage");
+                } catch (storageError) {
+                    console.warn("Could not save to localStorage:", storageError);
+                }
+
                 closeEditor();
-                alert("Content saved successfully!");
+                
+                // Show success message
+                const successMsg = document.createElement('div');
+                successMsg.innerHTML = `
+                    <div style="
+                        position: fixed;
+                        top: 100px;
+                        right: 20px;
+                        background: #27ae60;
+                        color: white;
+                        padding: 15px 20px;
+                        border-radius: 5px;
+                        z-index: 10001;
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    ">
+                        ✓ Content saved successfully!
+                    </div>
+                `;
+                document.body.appendChild(successMsg);
+                
+                // Remove success message after 3 seconds
+                setTimeout(() => {
+                    document.body.removeChild(successMsg);
+                }, 3000);
+                
                 console.log("Content saved successfully");
+                
             } catch (error) {
                 console.error("Error saving content:", error);
                 alert("Error saving content: " + error.message);
+            }
+        }
+
+        // Update page styles
+        function updatePageStyles(css) {
+            console.log("Updating page styles");
+            
+            // Remove existing dynamic styles
+            const existingStyle = document.getElementById("dynamic-styles");
+            if (existingStyle) {
+                existingStyle.remove();
+            }
+
+            // Add new styles
+            if (css) {
+                const styleEl = document.createElement("style");
+                styleEl.id = "dynamic-styles";
+                styleEl.textContent = css;
+                document.head.appendChild(styleEl);
+                console.log("Added new dynamic styles");
+            }
+        }
+
+        // Load saved content on page load
+        function loadSavedContent() {
+            try {
+                const savedData = localStorage.getItem('saved_content');
+                if (savedData) {
+                    const contentData = JSON.parse(savedData);
+                    console.log("Loading saved content from:", contentData.timestamp);
+                    
+                    // Update main content
+                    const mainContent = document.getElementById("mainContent");
+                    if (mainContent && contentData.html) {
+                        mainContent.innerHTML = contentData.html;
+                    }
+                    
+                    // Update styles
+                    if (contentData.css) {
+                        updatePageStyles(contentData.css);
+                    }
+                }
+            } catch (error) {
+                console.warn("Could not load saved content:", error);
             }
         }
 
