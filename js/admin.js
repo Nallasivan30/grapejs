@@ -4,34 +4,51 @@ let isEditing = false
 const grapesjs = window.grapesjs // Declare the grapesjs variable
 
 // Initialize when page loads
-document.addEventListener("DOMContentLoaded", () => {
-  // Initialize Netlify Identity
-  if (window.netlifyIdentity) {
-    window.netlifyIdentity.on("init", (user) => {
-      if (!user) {
-        window.netlifyIdentity.on("login", () => {
-          document.location.reload()
-        })
-      } else {
-        showAdminControls()
-      }
-    })
-
-    window.netlifyIdentity.on("logout", () => {
-      hideAdminControls()
-      document.location.reload()
-    })
-  }
-
-  // Check if user is already logged in
+function startEditing() {
+  // Check if user is authenticated
   const user = window.netlifyIdentity && window.netlifyIdentity.currentUser()
-  if (user) {
-    showAdminControls()
+  if (!user) {
+    // Open login modal
+    window.netlifyIdentity.open()
+    return
   }
 
-  // Initialize GrapesJS editor
-  initializeEditor()
-})
+  if (!editor) {
+    console.error("Editor not initialized")
+    initializeEditor() // Try to initialize if not already done
+    return
+  }
+
+  // Get current page content
+  const mainContent = document.getElementById("mainContent")
+  if (mainContent) {
+    // Set the HTML content in the editor
+    editor.setComponents(mainContent.innerHTML)
+    editor.setStyle(getPageStyles())
+  }
+
+  // Show editor
+  const editorEl = document.getElementById("gjs-editor")
+  if (editorEl) {
+    editorEl.classList.add("active")
+  }
+
+  // Show save button, hide edit button
+  const editBtn = document.querySelector(".edit-btn")
+  const saveBtn = document.getElementById("saveBtn")
+  
+  if (editBtn) editBtn.style.display = "none"
+  if (saveBtn) saveBtn.style.display = "inline-block"
+
+  isEditing = true
+  
+  // Refresh the editor to ensure proper rendering
+  setTimeout(() => {
+    if (editor) {
+      editor.refresh()
+    }
+  }, 100)
+}
 
 // Show admin controls for authenticated users
 function showAdminControls() {
@@ -250,6 +267,7 @@ function startEditing() {
 
   if (!editor) {
     console.error("Editor not initialized")
+    initializeEditor() // Try to initialize if not already done
     return
   }
 
@@ -263,13 +281,25 @@ function startEditing() {
 
   // Show editor
   const editorEl = document.getElementById("gjs-editor")
-  editorEl.classList.add("active")
+  if (editorEl) {
+    editorEl.classList.add("active")
+  }
 
   // Show save button, hide edit button
-  document.querySelector(".edit-btn").style.display = "none"
-  document.getElementById("saveBtn").style.display = "inline-block"
+  const editBtn = document.querySelector(".edit-btn")
+  const saveBtn = document.getElementById("saveBtn")
+  
+  if (editBtn) editBtn.style.display = "none"
+  if (saveBtn) saveBtn.style.display = "inline-block"
 
   isEditing = true
+  
+  // Refresh the editor to ensure proper rendering
+  setTimeout(() => {
+    if (editor) {
+      editor.refresh()
+    }
+  }, 100)
 }
 
 // Save content

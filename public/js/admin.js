@@ -5,29 +5,29 @@ const grapesjs = window.grapesjs // Declare the grapesjs variable
 
 // Initialize when page loads
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("[v0] Admin script loaded")
+  console.log("  Admin script loaded")
 
   // Initialize Netlify Identity
   if (window.netlifyIdentity) {
     window.netlifyIdentity.on("init", (user) => {
-      console.log("[v0] Netlify Identity initialized, user:", user)
+      console.log("  Netlify Identity initialized, user:", user)
       checkAuthStatus()
     })
 
     window.netlifyIdentity.on("login", (user) => {
-      console.log("[v0] User logged in:", user)
+      console.log("  User logged in:", user)
       showAdminControls()
     })
 
     window.netlifyIdentity.on("logout", () => {
-      console.log("[v0] User logged out")
+      console.log("  User logged out")
       hideAdminControls()
     })
 
     // Initialize the widget
     window.netlifyIdentity.init()
   } else {
-    console.error("[v0] Netlify Identity widget not loaded")
+    console.error("  Netlify Identity widget not loaded")
   }
 
   // Initialize GrapesJS editor (hidden by default)
@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function checkAuthStatus() {
   const user = window.netlifyIdentity && window.netlifyIdentity.currentUser()
-  console.log("[v0] Checking auth status, current user:", user)
+  console.log("  Checking auth status, current user:", user)
 
   const authButton = document.getElementById("authButton")
 
@@ -60,7 +60,7 @@ function checkAuthStatus() {
 }
 
 function showAdminControls() {
-  console.log("[v0] Showing admin controls")
+  console.log("  Showing admin controls")
   const adminControls = document.getElementById("adminControls")
   if (adminControls) {
     adminControls.classList.add("show")
@@ -68,7 +68,7 @@ function showAdminControls() {
 }
 
 function hideAdminControls() {
-  console.log("[v0] Hiding admin controls")
+  console.log("  Hiding admin controls")
   const adminControls = document.getElementById("adminControls")
   if (adminControls) {
     adminControls.classList.remove("show")
@@ -81,7 +81,7 @@ function hideAdminControls() {
 }
 
 function initializeEditor() {
-  console.log("[v0] Initializing GrapesJS editor")
+  console.log("  Initializing GrapesJS editor")
 
   try {
     editor = grapesjs.init({
@@ -99,11 +99,11 @@ function initializeEditor() {
               "Content-Type": "application/json",
             },
             onLoad: (result) => {
-              console.log("[v0] Content loaded:", result)
+              console.log("  Content loaded:", result)
               return result.data || ""
             },
             onStore: (data) => {
-              console.log("[v0] Saving content:", data)
+              console.log("  Saving content:", data)
               return { status: "success" }
             },
           },
@@ -147,17 +147,17 @@ function initializeEditor() {
       editorEl.style.display = "none"
     }
 
-    console.log("[v0] GrapesJS editor initialized successfully")
+    console.log("  GrapesJS editor initialized successfully")
   } catch (error) {
-    console.error("[v0] Error initializing GrapesJS:", error)
+    console.error("  Error initializing GrapesJS:", error)
   }
 }
 
 function toggleEdit() {
-  console.log("[v0] Toggling edit mode, current state:", isEditing)
+  console.log("  Toggling edit mode, current state:", isEditing)
 
   if (!editor) {
-    console.error("[v0] Editor not initialized")
+    console.error("  Editor not initialized")
     return
   }
 
@@ -169,7 +169,7 @@ function toggleEdit() {
 }
 
 function enterEditMode() {
-  console.log("[v0] Entering edit mode")
+  console.log("  Entering edit mode")
 
   try {
     isEditing = true
@@ -178,7 +178,7 @@ function enterEditMode() {
     const mainContent = document.getElementById("main-content")
     if (mainContent) {
       const currentHtml = mainContent.innerHTML
-      console.log("[v0] Current HTML length:", currentHtml.length)
+      console.log("  Current HTML length:", currentHtml.length)
 
       // Set content in editor
       editor.setComponents(currentHtml)
@@ -200,12 +200,12 @@ function enterEditMode() {
       }
     }
   } catch (error) {
-    console.error("[v0] Error entering edit mode:", error)
+    console.error("  Error entering edit mode:", error)
   }
 }
 
 function exitEditMode() {
-  console.log("[v0] Exiting edit mode")
+  console.log("  Exiting edit mode")
 
   try {
     isEditing = false
@@ -229,15 +229,15 @@ function exitEditMode() {
       editBtn.textContent = "✏️ Edit Page"
     }
   } catch (error) {
-    console.error("[v0] Error exiting edit mode:", error)
+    console.error("  Error exiting edit mode:", error)
   }
 }
 
 function saveContent() {
-  console.log("[v0] Saving content")
+  console.log("  Saving content")
 
   if (!editor || !isEditing) {
-    console.log("[v0] Not in edit mode, nothing to save")
+    console.log("  Not in edit mode, nothing to save")
     return
   }
 
@@ -246,8 +246,8 @@ function saveContent() {
     const html = editor.getHtml()
     const css = editor.getCss()
 
-    console.log("[v0] HTML length:", html.length)
-    console.log("[v0] CSS length:", css.length)
+    console.log("  HTML length:", html.length)
+    console.log("  CSS length:", css.length)
 
     // Update the main content
     const mainContent = document.getElementById("main-content")
@@ -269,13 +269,13 @@ function saveContent() {
 
     alert("Content saved successfully!")
   } catch (error) {
-    console.error("[v0] Error saving content:", error)
+    console.error("  Error saving content:", error)
     alert("Error saving content. Please try again.")
   }
 }
 
 function logout() {
-  console.log("[v0] Logging out")
+  console.log("  Logging out")
 
   if (window.netlifyIdentity) {
     window.netlifyIdentity.logout()
@@ -283,10 +283,10 @@ function logout() {
 }
 
 function toggleAuth() {
-  console.log("[v0] Toggle auth clicked")
+  console.log("  Toggle auth clicked")
 
   if (!window.netlifyIdentity) {
-    console.error("[v0] Netlify Identity not available")
+    console.error("  Netlify Identity not available")
     return
   }
 
