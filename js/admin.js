@@ -1,73 +1,85 @@
 // Admin functionality with Netlify Identity and GrapesJS
-let editor = null
-let isEditing = false
-const grapesjs = window.grapesjs // Declare the grapesjs variable
+let editor = null;
+let isEditing = false;
 
 // Initialize when page loads
-function startEditing() {
-  // Check if user is authenticated
-  const user = window.netlifyIdentity && window.netlifyIdentity.currentUser()
-  if (!user) {
-    // Open login modal
-    window.netlifyIdentity.open()
-    return
-  }
-
-  if (!editor) {
-    console.error("Editor not initialized")
-    initializeEditor() // Try to initialize if not already done
-    return
-  }
-
-  // Get current page content
-  const mainContent = document.getElementById("mainContent")
-  if (mainContent) {
-    // Set the HTML content in the editor
-    editor.setComponents(mainContent.innerHTML)
-    editor.setStyle(getPageStyles())
-  }
-
-  // Show editor
-  const editorEl = document.getElementById("gjs-editor")
-  if (editorEl) {
-    editorEl.classList.add("active")
-  }
-
-  // Show save button, hide edit button
-  const editBtn = document.querySelector(".edit-btn")
-  const saveBtn = document.getElementById("saveBtn")
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("DOM fully loaded and parsed");
   
-  if (editBtn) editBtn.style.display = "none"
-  if (saveBtn) saveBtn.style.display = "inline-block"
+  // Initialize Netlify Identity
+  if (window.netlifyIdentity) {
+    console.log("Netlify Identity found, initializing...");
+    
+    window.netlifyIdentity.on("init", (user) => {
+      console.log("Netlify Identity initialized", user);
+      
+      if (!user) {
+        console.log("No user logged in, setting up login handler");
+        window.netlifyIdentity.on("login", () => {
+          console.log("User logged in, reloading page");
+          document.location.reload();
+        });
+      } else {
+        console.log("User already logged in, showing admin controls");
+        showAdminControls();
+      }
+    });
 
-  isEditing = true
-  
-  // Refresh the editor to ensure proper rendering
-  setTimeout(() => {
-    if (editor) {
-      editor.refresh()
-    }
-  }, 100)
-}
+    window.netlifyIdentity.on("logout", () => {
+      console.log("User logged out");
+      hideAdminControls();
+      document.location.reload();
+    });
+  } else {
+    console.error("Netlify Identity not found!");
+  }
+
+  // Check if user is already logged in
+  const user = window.netlifyIdentity && window.netlifyIdentity.currentUser();
+  if (user) {
+    console.log("Found logged in user on load", user);
+    showAdminControls();
+  }
+
+  // Initialize GrapesJS editor only if the editor container exists
+  if (document.getElementById("gjs-editor")) {
+    console.log("Initializing GrapesJS editor");
+    initializeEditor();
+  } else {
+    console.error("GrapesJS editor container not found");
+  }
+});
 
 // Show admin controls for authenticated users
 function showAdminControls() {
-  const adminControls = document.getElementById("adminControls")
+  console.log("Attempting to show admin controls...");
+  const adminControls = document.getElementById("adminControls");
   if (adminControls) {
-    adminControls.classList.add("show")
+    console.log("Admin controls element found, adding 'show' class");
+    adminControls.classList.add("show");
+  } else {
+    console.error("Admin controls element not found!");
   }
 }
 
 // Hide admin controls
 function hideAdminControls() {
-  const adminControls = document.getElementById("adminControls")
+  console.log("Hiding admin controls");
+  const adminControls = document.getElementById("adminControls");
   if (adminControls) {
-    adminControls.classList.remove("show")
+    adminControls.classList.remove("show");
   }
 }
 
 // Initialize GrapesJS Editor
 function initializeEditor() {
+  console.log("Initializing GrapesJS editor instance");
+  
+  if (!window.grapesjs) {
+    console.error("GrapesJS not loaded!");
+    return;
+  }
+
   editor = grapesjs.init({
     container: "#gjs-editor",
     height: "100vh",
@@ -197,206 +209,257 @@ function initializeEditor() {
     canvas: {
       styles: ["https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"],
     },
-  })
+  });
 
   // Add custom commands
   editor.Commands.add("show-layers", {
     getRowEl(editor) {
-      return editor.getContainer().closest(".editor-row")
+      return editor.getContainer().closest(".editor-row");
     },
     getLayersEl(row) {
-      return row.querySelector(".layers-container")
+      return row.querySelector(".layers-container");
     },
 
     run(editor, sender) {
-      const lmEl = this.getLayersEl(this.getRowEl(editor))
-      lmEl.style.display = ""
+      const lmEl = this.getLayersEl(this.getRowEl(editor));
+      lmEl.style.display = "";
     },
     stop(editor, sender) {
-      const lmEl = this.getLayersEl(this.getRowEl(editor))
-      lmEl.style.display = "none"
+      const lmEl = this.getLayersEl(this.getRowEl(editor));
+      lmEl.style.display = "none";
     },
-  })
+  });
 
   editor.Commands.add("show-styles", {
     getRowEl(editor) {
-      return editor.getContainer().closest(".editor-row")
+      return editor.getContainer().closest(".editor-row");
     },
     getStyleEl(row) {
-      return row.querySelector(".styles-container")
+      return row.querySelector(".styles-container");
     },
 
     run(editor, sender) {
-      const smEl = this.getStyleEl(this.getRowEl(editor))
-      smEl.style.display = ""
+      const smEl = this.getStyleEl(this.getRowEl(editor));
+      smEl.style.display = "";
     },
     stop(editor, sender) {
-      const smEl = this.getStyleEl(this.getRowEl(editor))
-      smEl.style.display = "none"
+      const smEl = this.getStyleEl(this.getRowEl(editor));
+      smEl.style.display = "none";
     },
-  })
+  });
 
   editor.Commands.add("show-traits", {
     getRowEl(editor) {
-      return editor.getContainer().closest(".editor-row")
+      return editor.getContainer().closest(".editor-row");
     },
     getTraitsEl(row) {
-      return row.querySelector(".traits-container")
+      return row.querySelector(".traits-container");
     },
 
     run(editor, sender) {
-      const tmEl = this.getTraitsEl(this.getRowEl(editor))
-      tmEl.style.display = ""
+      const tmEl = this.getTraitsEl(this.getRowEl(editor));
+      tmEl.style.display = "";
     },
     stop(editor, sender) {
-      const tmEl = this.getTraitsEl(this.getRowEl(editor))
-      tmEl.style.display = "none"
+      const tmEl = this.getTraitsEl(this.getRowEl(editor));
+      tmEl.style.display = "none";
     },
-  })
+  });
+
+  console.log("GrapesJS editor initialized successfully");
 }
 
 // Start editing mode
 function startEditing() {
+  console.log("Attempting to start editing...");
+  
   // Check if user is authenticated
-  const user = window.netlifyIdentity && window.netlifyIdentity.currentUser()
+  const user = window.netlifyIdentity && window.netlifyIdentity.currentUser();
   if (!user) {
-    // Open login modal
-    window.netlifyIdentity.open()
-    return
+    console.log("No user logged in, opening login modal");
+    window.netlifyIdentity.open();
+    return;
   }
 
   if (!editor) {
-    console.error("Editor not initialized")
-    initializeEditor() // Try to initialize if not already done
-    return
+    console.error("Editor not initialized, attempting to initialize");
+    initializeEditor();
+    return;
   }
 
   // Get current page content
-  const mainContent = document.getElementById("mainContent")
+  const mainContent = document.getElementById("mainContent");
   if (mainContent) {
-    // Set the HTML content in the editor
-    editor.setComponents(mainContent.innerHTML)
-    editor.setStyle(getPageStyles())
+    console.log("Setting editor content from mainContent");
+    editor.setComponents(mainContent.innerHTML);
+    editor.setStyle(getPageStyles());
+  } else {
+    console.error("mainContent element not found");
   }
 
   // Show editor
-  const editorEl = document.getElementById("gjs-editor")
+  const editorEl = document.getElementById("gjs-editor");
   if (editorEl) {
-    editorEl.classList.add("active")
+    console.log("Showing editor");
+    editorEl.classList.add("active");
+  } else {
+    console.error("Editor element not found");
   }
 
   // Show save button, hide edit button
-  const editBtn = document.querySelector(".edit-btn")
-  const saveBtn = document.getElementById("saveBtn")
+  const editBtn = document.querySelector(".edit-btn");
+  const saveBtn = document.getElementById("saveBtn");
   
-  if (editBtn) editBtn.style.display = "none"
-  if (saveBtn) saveBtn.style.display = "inline-block"
+  if (editBtn) {
+    console.log("Hiding edit button");
+    editBtn.style.display = "none";
+  }
+  
+  if (saveBtn) {
+    console.log("Showing save button");
+    saveBtn.style.display = "inline-block";
+  }
 
-  isEditing = true
+  isEditing = true;
   
   // Refresh the editor to ensure proper rendering
   setTimeout(() => {
     if (editor) {
-      editor.refresh()
+      console.log("Refreshing editor");
+      editor.refresh();
     }
-  }, 100)
+  }, 100);
 }
 
 // Save content
 function saveContent() {
-  if (!editor || !isEditing) return
-
-  // Get the updated HTML and CSS from the editor
-  const html = editor.getHtml()
-  const css = editor.getCss()
-
-  // Update the main content
-  const mainContent = document.getElementById("mainContent")
-  if (mainContent) {
-    mainContent.innerHTML = html
+  console.log("Attempting to save content");
+  
+  if (!editor || !isEditing) {
+    console.error("Cannot save - no editor or not in editing mode");
+    return;
   }
 
-  // Update styles (you might want to inject CSS into a style tag)
-  updatePageStyles(css)
+  // Get the updated HTML and CSS from the editor
+  const html = editor.getHtml();
+  const css = editor.getCss();
+  console.log("Got updated content from editor");
+
+  // Update the main content
+  const mainContent = document.getElementById("mainContent");
+  if (mainContent) {
+    console.log("Updating main content");
+    mainContent.innerHTML = html;
+  }
+
+  // Update styles
+  updatePageStyles(css);
 
   // Hide editor
-  const editorEl = document.getElementById("gjs-editor")
-  editorEl.classList.remove("active")
+  const editorEl = document.getElementById("gjs-editor");
+  if (editorEl) {
+    console.log("Hiding editor");
+    editorEl.classList.remove("active");
+  }
 
   // Show edit button, hide save button
-  document.querySelector(".edit-btn").style.display = "inline-block"
-  document.getElementById("saveBtn").style.display = "none"
+  const editBtn = document.querySelector(".edit-btn");
+  const saveBtn = document.getElementById("saveBtn");
+  
+  if (editBtn) {
+    console.log("Showing edit button");
+    editBtn.style.display = "inline-block";
+  }
+  
+  if (saveBtn) {
+    console.log("Hiding save button");
+    saveBtn.style.display = "none";
+  }
 
-  isEditing = false
+  isEditing = false;
 
   // Show success message
-  alert("Content saved successfully!")
+  alert("Content saved successfully!");
+  console.log("Content saved successfully");
 }
 
 // Get current page styles
 function getPageStyles() {
-  const styleSheets = document.styleSheets
-  let styles = ""
+  console.log("Getting page styles");
+  const styleSheets = document.styleSheets;
+  let styles = "";
 
   for (let i = 0; i < styleSheets.length; i++) {
     try {
-      const rules = styleSheets[i].cssRules || styleSheets[i].rules
+      const rules = styleSheets[i].cssRules || styleSheets[i].rules;
       for (let j = 0; j < rules.length; j++) {
-        styles += rules[j].cssText + "\n"
+        styles += rules[j].cssText + "\n";
       }
     } catch (e) {
-      // Skip external stylesheets due to CORS
-      console.log("Skipping external stylesheet")
+      console.log("Skipping external stylesheet due to CORS");
     }
   }
 
-  return styles
+  return styles;
 }
 
 // Update page styles
 function updatePageStyles(css) {
+  console.log("Updating page styles");
+  
   // Remove existing dynamic styles
-  const existingStyle = document.getElementById("dynamic-styles")
+  const existingStyle = document.getElementById("dynamic-styles");
   if (existingStyle) {
-    existingStyle.remove()
+    console.log("Removing existing dynamic styles");
+    existingStyle.remove();
   }
 
   // Add new styles
   if (css) {
-    const styleEl = document.createElement("style")
-    styleEl.id = "dynamic-styles"
-    styleEl.textContent = css
-    document.head.appendChild(styleEl)
+    console.log("Adding new dynamic styles");
+    const styleEl = document.createElement("style");
+    styleEl.id = "dynamic-styles";
+    styleEl.textContent = css;
+    document.head.appendChild(styleEl);
   }
 }
 
 // Logout function
 function logout() {
+  console.log("Logging out");
   if (window.netlifyIdentity) {
-    window.netlifyIdentity.logout()
+    window.netlifyIdentity.logout();
   }
 }
 
 // Handle escape key to exit editing mode
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && isEditing) {
+    console.log("Escape key pressed, exiting edit mode");
+    
     // Hide editor without saving
-    const editorEl = document.getElementById("gjs-editor")
-    editorEl.classList.remove("active")
+    const editorEl = document.getElementById("gjs-editor");
+    if (editorEl) {
+      editorEl.classList.remove("active");
+    }
 
     // Show edit button, hide save button
-    document.querySelector(".edit-btn").style.display = "inline-block"
-    document.getElementById("saveBtn").style.display = "none"
+    const editBtn = document.querySelector(".edit-btn");
+    const saveBtn = document.getElementById("saveBtn");
+    
+    if (editBtn) editBtn.style.display = "inline-block";
+    if (saveBtn) saveBtn.style.display = "none";
 
-    isEditing = false
+    isEditing = false;
   }
-})
+});
 
 // Prevent accidental page reload during editing
 window.addEventListener("beforeunload", (e) => {
   if (isEditing) {
-    e.preventDefault()
-    e.returnValue = "You have unsaved changes. Are you sure you want to leave?"
-    return e.returnValue
+    console.log("Warning about unsaved changes");
+    e.preventDefault();
+    e.returnValue = "You have unsaved changes. Are you sure you want to leave?";
+    return e.returnValue;
   }
-})
+});
